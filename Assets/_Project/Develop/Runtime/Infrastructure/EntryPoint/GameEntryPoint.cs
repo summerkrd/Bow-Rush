@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections;
+using Develop.Runtime.Infrastructure.DI;
+using Develop.Runtime.Utilities.ConfigsManagment;
+using Develop.Runtime.Utilities.CoroutinesManagment;
+using Develop.Runtime.Gameplay.Infrastructure;
+using UnityEngine;
+
+namespace Develop.Runtime.Gameplay.Infrastructure
+{
+    public class GameEntryPoint : MonoBehaviour
+    {
+        private void Awake()
+        {
+            Debug.Log("Старт проекта, сетап настроек");
+            SetupAppSettings();
+
+            Debug.Log("Процесс регистрации сервисов всего проекта");
+            DIContainer container = new DIContainer();
+            EntryPointRegistrations.Process(container);
+
+            container.Resolve<ICoroutinePerformer>().StartPerform(Initialize(container));
+        }
+
+        private void SetupAppSettings()
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+        }
+
+        private IEnumerator Initialize(DIContainer container)
+        {
+            SceneSwitcherService sceneSwitcherService = container.Resolve<SceneSwitcherService>();
+            
+            ILoadingScreen loadingScreen = container.Resolve<ILoadingScreen>();
+            Debug.Log("Открывается штора загрузки");
+            loadingScreen.Show();
+
+            Debug.Log("Начинается инициализация сервисов");
+            yield return container.Resolve<ConfigsProviderService>().LoadAsync();
+
+            yield return new WaitForSeconds(1);
+
+            Debug.Log("Завершается инициализация сервисов");
+
+            Debug.Log("Закрывается штора загрузки");
+            loadingScreen.Hide();
+            
+            Debug.Log("Начинается переход на какую то сцену");
+            yield return sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu);
+        }
+    }
+}
