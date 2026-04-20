@@ -10,15 +10,23 @@ namespace Develop.Runtime.Gameplay.Infrastructure
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        
-        public override IEnumerator Initialize(DIContainer container, IInputSceneArgs sceneArgs)
+        private GameplayInputArgs _inputArgs;
+
+        public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
             _container  = container;
 
             if (sceneArgs is not GameplayInputArgs gameplayInputArgs)
                 throw new ArgumentException($"{nameof(sceneArgs)} is not match with {typeof(GameplayInputArgs)} type");
+            
+            _inputArgs = gameplayInputArgs;
+            
+            GameplayContextRegistrations.Process(container, _inputArgs);
+        }
 
-            Debug.Log($"Вы попали на уровень {gameplayInputArgs.LevelNumber}");
+        public override IEnumerator Initialize()
+        {
+            Debug.Log($"Вы попали на уровень {_inputArgs.LevelNumber}");
             
             Debug.Log("Инициализация геймплейной сцены");
             yield break;

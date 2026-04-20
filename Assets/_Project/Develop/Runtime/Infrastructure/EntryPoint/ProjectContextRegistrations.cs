@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace Develop.Runtime.Gameplay.Infrastructure
 {
-    public class EntryPointRegistrations
+    public class ProjectContextRegistrations
     {
         public static void Process(DIContainer container)
         {

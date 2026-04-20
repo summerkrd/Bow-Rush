@@ -10,11 +10,15 @@ namespace Develop.Runtime.Gameplay.Infrastructure
     public class MainMenuBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        
-        public override IEnumerator Initialize(DIContainer container, IInputSceneArgs sceneArgs)
+
+        public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
             _container  = container;
-            
+            MainMenuContextRegistrations.Process(_container);
+        }
+
+        public override IEnumerator Initialize()
+        {
             Debug.Log("Инициализация меню сцены");
             yield break;
         }

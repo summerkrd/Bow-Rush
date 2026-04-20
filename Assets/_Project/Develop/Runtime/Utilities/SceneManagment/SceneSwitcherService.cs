@@ -10,16 +10,16 @@ namespace Develop.Runtime.Gameplay.Infrastructure
     {
         private readonly SceneLoaderService _sceneLoaderService;
         private readonly ILoadingScreen _loadingScreen;
-        private DIContainer _container;
+        private DIContainer _projectContainer;
 
         public SceneSwitcherService(
             SceneLoaderService sceneLoaderService, 
             ILoadingScreen loadingScreen, 
-            DIContainer container)
+            DIContainer projectContainer)
         {
             _sceneLoaderService = sceneLoaderService;
             _loadingScreen = loadingScreen;
-            _container = container;
+            _projectContainer = projectContainer;
         }
 
         public IEnumerator ProcessSwitchTo(string sceneName, IInputSceneArgs sceneArgs = null)
@@ -33,7 +33,11 @@ namespace Develop.Runtime.Gameplay.Infrastructure
             if (sceneBootstrap == null)
                 throw new NullReferenceException(nameof(sceneBootstrap) + " not found");
             
-            yield return sceneBootstrap.Initialize(_container, sceneArgs);
+            DIContainer sceneContainer = new DIContainer(_projectContainer);
+            
+            sceneBootstrap.ProcessRegistrations(sceneContainer, sceneArgs);
+            
+            yield return sceneBootstrap.Initialize();
             
             _loadingScreen.Hide();
             

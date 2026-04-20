@@ -16,10 +16,10 @@ namespace Develop.Runtime.Gameplay.Infrastructure
             SetupAppSettings();
 
             Debug.Log("Процесс регистрации сервисов всего проекта");
-            DIContainer container = new DIContainer();
-            EntryPointRegistrations.Process(container);
+            DIContainer projectContainer = new DIContainer();
+            ProjectContextRegistrations.Process(projectContainer);
 
-            container.Resolve<ICoroutinePerformer>().StartPerform(Initialize(container));
+            projectContainer.Resolve<ICoroutinePerformer>().StartPerform(Initialize(projectContainer));
         }
 
         private void SetupAppSettings()
