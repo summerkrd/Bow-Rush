@@ -2,10 +2,10 @@
 using System.Collections;
 using Develop.Runtime.Infrastructure.DI;
 using Develop.Runtime.Utilities.CoroutinesManagment;
-using Develop.Runtime.Gameplay.Infrastructure;
+using Develop.Runtime.Utilities.SceneManagment;
 using UnityEngine;
 
-namespace Develop.Runtime.Gameplay.Infrastructure
+namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class GameplayBootstrap : SceneBootstrap
     {

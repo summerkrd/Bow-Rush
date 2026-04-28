@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Develop.Runtime.Gameplay.Infrastructure
+namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class StandardLoadingScreen : MonoBehaviour, ILoadingScreen
     {

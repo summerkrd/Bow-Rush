@@ -1,0 +1,9 @@
+﻿using System.Collections.Generic;
+
+namespace Develop.Runtime.Utilities.DataManagment
+{
+    public class PlayerData
+    {
+        public Dictionary<CurrencyTypes, int> WalletData;
+    }
+}

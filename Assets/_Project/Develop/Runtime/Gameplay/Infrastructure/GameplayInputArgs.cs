@@ -1,4 +1,4 @@
-﻿namespace Develop.Runtime.Gameplay.Infrastructure
+﻿namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class GameplayInputArgs : IInputSceneArgs
     {

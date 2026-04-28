@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using Develop.Runtime.Infrastructure.DI;
-using Develop.Runtime.Gameplay.Infrastructure;
+using Develop.Runtime.Utilities.SceneManagment;
 using Object = UnityEngine.Object;
 
-namespace Develop.Runtime.Gameplay.Infrastructure
+namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class SceneSwitcherService
     {

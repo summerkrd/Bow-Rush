@@ -1,11 +1,14 @@
-﻿using Develop.Runtime.Infrastructure.DI;
+﻿using System;
+using System.Collections.Generic;
+using Develop.Runtime.Infrastructure.DI;
+using Develop.Runtime.Utilities.DataManagment;
 using Develop.Runtime.Utilities.AssetsManagment;
 using Develop.Runtime.Utilities.ConfigsManagment;
 using Develop.Runtime.Utilities.CoroutinesManagment;
-using Develop.Runtime.Gameplay.Infrastructure;
+using Develop.Runtime.Utilities.Reactive;
 using Object = UnityEngine.Object;
 
-namespace Develop.Runtime.Gameplay.Infrastructure
+namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class ProjectContextRegistrations
     {
@@ -17,6 +20,17 @@ namespace Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateSceneLoaderService);
             container.RegisterAsSingle(CreateSceneSwitcherService);
             container.RegisterAsSingle<ILoadingScreen>(CreateLoadingScreen);
+            container.RegisterAsSingle(CreateWalletService);
+        }
+
+        private static WalletService CreateWalletService(DIContainer c)
+        {
+            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
+
+            foreach (CurrencyTypes types in Enum.GetValues(typeof(CurrencyTypes)))
+                currencies[types] = new ReactiveVariable<int>();
+
+            return new WalletService(currencies);
         }
 
         private static SceneLoaderService CreateSceneLoaderService(DIContainer c) => new();

@@ -1,7 +1,7 @@
 ﻿using Develop.Runtime.Infrastructure.DI;
 using UnityEngine;
 
-namespace Develop.Runtime.Gameplay.Infrastructure
+namespace Develop.Runtime.Utilities.SceneManagment
 {
     public class GameplayContextRegistrations
     {
