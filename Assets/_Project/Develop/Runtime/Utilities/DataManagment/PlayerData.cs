@@ -2,7 +2,7 @@
 
 namespace Develop.Runtime.Utilities.DataManagment
 {
-    public class PlayerData
+    public class PlayerData : ISaveData
     {
         public Dictionary<CurrencyTypes, int> WalletData;
     }
