@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Develop.Runtime.Infrastructure.DI;
 using Develop.Runtime.Utilities.DataManagment;
 using Develop.Runtime.Utilities.CoroutinesManagment;
+using Develop.Runtime.Utilities.DataManagment.DataProviders;
 using UnityEngine;
 
 namespace Develop.Runtime.Utilities.SceneManagment
@@ -13,7 +14,9 @@ namespace Develop.Runtime.Utilities.SceneManagment
         
         private WalletService _walletService;
         
-        private PlayerData _playerData;
+        private PlayerDataProvider _playerDataProvider;
+        
+        private ICoroutinePerformer _coroutinePerformer;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -26,13 +29,9 @@ namespace Develop.Runtime.Utilities.SceneManagment
             Debug.Log("Инициализация меню сцены");
             
             _walletService = _container.Resolve<WalletService>();
-
-            _playerData = new PlayerData();
-            _playerData.WalletData = new Dictionary<CurrencyTypes, int>()
-            {
-                { CurrencyTypes.Gold, 10 },
-                { CurrencyTypes.Diamond, 150 },
-            };
+            
+            _playerDataProvider = _container.Resolve<PlayerDataProvider>();
+            _coroutinePerformer = _container.Resolve<ICoroutinePerformer>();
             
             yield break;
         }
@@ -64,6 +63,12 @@ namespace Develop.Runtime.Utilities.SceneManagment
                     _walletService.Spend(CurrencyTypes.Gold, 10);
                     Debug.Log("Gold count " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                _coroutinePerformer.StartPerform(_playerDataProvider.Save());
+                Debug.Log("Сохранение было вызвано");
             }
         }
     }

@@ -5,7 +5,12 @@ using Develop.Runtime.Utilities.DataManagment;
 using Develop.Runtime.Utilities.AssetsManagment;
 using Develop.Runtime.Utilities.ConfigsManagment;
 using Develop.Runtime.Utilities.CoroutinesManagment;
+using Develop.Runtime.Utilities.DataManagment.DataProviders;
+using Develop.Runtime.Utilities.DataManagment.DataRepository;
+using Develop.Runtime.Utilities.DataManagment.KeysStorage;
+using Develop.Runtime.Utilities.DataManagment.Serializers;
 using Develop.Runtime.Utilities.Reactive;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Develop.Runtime.Utilities.SceneManagment
@@ -20,7 +25,24 @@ namespace Develop.Runtime.Utilities.SceneManagment
             container.RegisterAsSingle(CreateSceneLoaderService);
             container.RegisterAsSingle(CreateSceneSwitcherService);
             container.RegisterAsSingle<ILoadingScreen>(CreateLoadingScreen);
-            container.RegisterAsSingle(CreateWalletService);
+            container.RegisterAsSingle(CreateWalletService).NonLazy();
+            container.RegisterAsSingle(CreatePlayerDataProvider);
+            container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
+        }
+
+        private static PlayerDataProvider CreatePlayerDataProvider(DIContainer c)
+            => new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
+
+        private static SaveLoadService CreateSaveLoadService(DIContainer c)
+        {
+            IDataSerializer dataSerializer = new JsonSerializer();
+            IDataKeysStorage dataKeysStorage = new MapDataKeyStorage();
+            
+            string saveFolderPath = Application.isEditor? Application.dataPath : Application.persistentDataPath;
+
+            IDataRepository dataRepository = new LocalFileDataRepository(saveFolderPath, "json");
+
+            return new SaveLoadService(dataSerializer, dataKeysStorage, dataRepository);
         }
 
         private static WalletService CreateWalletService(DIContainer c)
@@ -30,7 +52,7 @@ namespace Develop.Runtime.Utilities.SceneManagment
             foreach (CurrencyTypes types in Enum.GetValues(typeof(CurrencyTypes)))
                 currencies[types] = new ReactiveVariable<int>();
 
-            return new WalletService(currencies);
+            return new WalletService(currencies, c.Resolve<PlayerDataProvider>());
         }
 
         private static SceneLoaderService CreateSceneLoaderService(DIContainer c) => new();

@@ -3,6 +3,7 @@ using System.Collections;
 using Develop.Runtime.Infrastructure.DI;
 using Develop.Runtime.Utilities.ConfigsManagment;
 using Develop.Runtime.Utilities.CoroutinesManagment;
+using Develop.Runtime.Utilities.DataManagment.DataProviders;
 using Develop.Runtime.Utilities.SceneManagment;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ namespace Develop.Runtime.Utilities.SceneManagment
             Debug.Log("Процесс регистрации сервисов всего проекта");
             DIContainer projectContainer = new DIContainer();
             ProjectContextRegistrations.Process(projectContainer);
+            
+            projectContainer.Initialize();
 
             projectContainer.Resolve<ICoroutinePerformer>().StartPerform(Initialize(projectContainer));
         }
@@ -31,6 +34,7 @@ namespace Develop.Runtime.Utilities.SceneManagment
         private IEnumerator Initialize(DIContainer container)
         {
             SceneSwitcherService sceneSwitcherService = container.Resolve<SceneSwitcherService>();
+            PlayerDataProvider playerDataProvider = container.Resolve<PlayerDataProvider>();
             
             ILoadingScreen loadingScreen = container.Resolve<ILoadingScreen>();
             Debug.Log("Открывается штора загрузки");
@@ -39,6 +43,14 @@ namespace Develop.Runtime.Utilities.SceneManagment
             Debug.Log("Начинается инициализация сервисов");
             yield return container.Resolve<ConfigsProviderService>().LoadAsync();
 
+            bool isPlayerDataSaveExists = false;
+            yield return playerDataProvider.Exists(result => isPlayerDataSaveExists = result);
+            
+            if (isPlayerDataSaveExists)
+                yield return playerDataProvider.Load();
+            else
+                playerDataProvider.Reset();
+            
             yield return new WaitForSeconds(1);
 
             Debug.Log("Завершается инициализация сервисов");
